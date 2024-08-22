@@ -1,0 +1,29 @@
+# config.toml
+
+[websocket.gemini]
+ws_url = "wss://api.gemini.com/v1/marketdata/BTCUSD"
+name = "Gemini"
+pointer = "/events/0/price"
+
+[websocket.bybit]
+ws_url = "wss://stream.bybit.com/realtime"
+msg = '{"op": "subscribe", "args": ["trade.BTCUSD"]}'
+name = "Bybit"
+pointer = "/data/0/price"
+
+[websocket.binance]
+ws_url = "wss://stream.binance.com:9443/ws/btcusdt@trade"
+name = "Binance"
+pointer = "/p"
+
+[websocket.kraken]
+ws_url = "wss://ws.kraken.com/"
+msg = '{"event":"subscribe", "subscription":{"name":"ticker"}, "pair":["BTC/USD"]}'
+name = "Kraken"
+pointer = "/1/p/0"
+
+[websocket.bitfinex]
+msg = '{ "event": "subscribe", "channel": "ticker","symbol": "tBTCUSD"}'
+ws_url = "wss://api-pub.bitfinex.com/ws/2"
+name = "Bitfinex"
+pointer = "/1/6"

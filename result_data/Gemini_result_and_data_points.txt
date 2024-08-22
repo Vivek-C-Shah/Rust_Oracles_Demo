@@ -1,0 +1,6 @@
+average 42715.7425
+Data points: 
+{"eventId":1683001525651550,"events":[{"delta":"-0.1106","price":"42716.74","reason":"cancel","remaining":"0.0","side":"bid","type":"change"}],"socket_sequence":0,"timestamp":1705154752,"timestampms":1705154752827,"type":"update"}
+{"eventId":1683001525651551,"events":[{"delta":"0.1106","price":"42715.37","reason":"place","remaining":"0.1106","side":"bid","type":"change"}],"socket_sequence":2,"timestamp":1705154752,"timestampms":1705154752828,"type":"update"}
+{"eventId":1683001525651553,"events":[{"delta":"-0.1106","price":"42715.37","reason":"cancel","remaining":"0.0","side":"bid","type":"change"}],"socket_sequence":3,"timestamp":1705154752,"timestampms":1705154752829,"type":"update"}
+{"eventId":1683001525651559,"events":[{"delta":"0.1106","price":"42715.49","reason":"place","remaining":"0.1106","side":"bid","type":"change"}],"socket_sequence":4,"timestamp":1705154752,"timestampms":1705154752830,"type":"update"}
