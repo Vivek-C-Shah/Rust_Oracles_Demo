@@ -17,6 +17,8 @@ structopt = "0.3.23"
 k256 = "0.13.2"
 rand = "0.8.5"
 toml = "0.8.6"
+tokio-postgres = "0.7"
+chrono = "0.4.19"
 
 [dev-dependencies]
 criterion = "0.5.0"

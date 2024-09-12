@@ -9,7 +9,7 @@ pointer = "/events/0/price"
 ws_url = "wss://stream.bybit.com/realtime"
 msg = '{"op": "subscribe", "args": ["trade.BTCUSD"]}'
 name = "Bybit"
-pointer = "/data/0/price"
+pointer = "/data/0/p"
 
 [websocket.binance]
 ws_url = "wss://stream.binance.com:9443/ws/btcusdt@trade"
@@ -20,7 +20,7 @@ pointer = "/p"
 ws_url = "wss://ws.kraken.com/"
 msg = '{"event":"subscribe", "subscription":{"name":"ticker"}, "pair":["BTC/USD"]}'
 name = "Kraken"
-pointer = "/1/p/0"
+pointer = "/1/c/0"
 
 [websocket.bitfinex]
 msg = '{ "event": "subscribe", "channel": "ticker","symbol": "tBTCUSD"}'

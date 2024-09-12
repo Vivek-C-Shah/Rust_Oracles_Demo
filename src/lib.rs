@@ -3,3 +3,4 @@ pub mod counter;
 pub mod file_operation;
 pub mod key_counter;
 pub mod ws_process;
+pub mod db_operations;

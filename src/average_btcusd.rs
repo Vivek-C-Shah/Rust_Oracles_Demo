@@ -1,5 +1,5 @@
 use crate::counter::Counter;
-use crate::file_operation::save_to_file;
+use crate::db_operations::save_to_db;
 use crate::key_counter::{verify_signature, KeyCounter};
 use crate::ws_process::listen_to_websocket;
 // use futures_util::future::try_join_all;
@@ -19,13 +19,12 @@ struct Config {
     websocket: std::collections::BTreeMap<String, WebSocket>,
 }
 
-pub async fn cache_mode(duration_seconds: u64) {
+pub async fn cache_mode(duration_seconds: u64, client: &tokio_postgres::Client) -> f64 {
     let config_content = std::fs::read_to_string("config.toml").expect("Error reading config file");
     let config: Config = toml::from_str(&config_content).expect("Error parsing config file");
-    //----------------------------------------------------------------------------------------------------------------------
 
-    let res_counter = std::sync::Arc::new(std::sync::Mutex::new(Counter::new())); //for file operations
-    let key_counter = std::sync::Arc::new(std::sync::Mutex::new(KeyCounter::new())); //for signatures
+    let res_counter = std::sync::Arc::new(std::sync::Mutex::new(Counter::new())); // for file operations
+    let key_counter = std::sync::Arc::new(std::sync::Mutex::new(KeyCounter::new())); // for signatures
 
     let tasks: Vec<_> = config
         .websocket
@@ -54,38 +53,46 @@ pub async fn cache_mode(duration_seconds: u64) {
         .collect();
 
     for pair in results {
+        let exchange_name = pair.0.clone(); // Get the exchange name
+        let price = pair.1;
+
         let verify = verify_signature(
             key_counter
                 .lock()
                 .unwrap()
                 .public_keys
-                .get(&pair.0)
+                .get(&exchange_name)
                 .unwrap(),
-            pair.1.to_string().as_str(),
+            price.to_string().as_str(),
             &pair.2,
-        ); //verifying the signature-------------------
+        );
+        
         match verify {
             true => {
-                if pair.1 != 0.0 {
-                    sum += pair.1;
+                if price != 0.0 {
+                    sum += price;
                     count += 1;
+
+                    // Save each exchange's price to the database
+                    let timestamp = chrono::Utc::now().naive_utc();
+                    save_to_db(client, &exchange_name, price, timestamp).await;
+                    println!(
+                        "Saved data for {}: Price: {}, Timestamp: {}",
+                        exchange_name, price, timestamp
+                    );
                 }
             }
-            false => eprintln!("Signature verification failed"),
+            false => eprintln!("Signature verification failed for exchange: {}", exchange_name),
         }
     }
-    let average = sum / count as f64;
-    //format to store the data in btcusd_average.txt--------------------------this is the aggregated result
-    let content = format!(
-        "The Average USD price of BTC is: {} \n {:?}",
-        average,
-        res_counter.lock().unwrap().data
-    );
-    //---------------------------------------------------------------------------------------------------
-    let file_path = format!("btcusd_average.txt");
-    let _ = save_to_file(file_path.as_str(), &content).await;
-    println!(
-        "Total Cache complete. The average USD price of BTC is: {}",
-        average
-    );
+
+    // Calculate and return the average price
+    let average_price = if count > 0 { sum / count as f64 } else { 0.0 };
+
+    // Save the average price to the database
+    let timestamp = chrono::Utc::now().naive_utc();
+    save_to_db(client, "average", average_price, timestamp).await;
+    println!("Successfully saved the average price: {} to the database.", average_price);
+
+    average_price
 }
